@@ -32,8 +32,6 @@ WebMock.allow_net_connect = true
 ### Stub request based on uri only and with the default response
 
 ```crystal
-require "./src/webmock"
-
 WebMock.stub(:any, "www.example.com")
 
 response = HTTP::Client.get("http://www.example.com")
