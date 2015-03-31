@@ -94,7 +94,8 @@ HTTP::Client.get("http://www.example.com") # Raises WebMock::NetConnectNotAllowe
 
 ## Todo
 
-Bring more features found in the [webmock ruby gem](https://github.com/bblimke/webmock).
+- Make WebMock::NetConnectNotAllowedError print the stub you need to write
+- Bring more features found in the [webmock ruby gem](https://github.com/bblimke/webmock).
 
 ## Contributing
 
