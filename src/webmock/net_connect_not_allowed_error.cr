@@ -26,7 +26,7 @@ class WebMock::NetConnectNotAllowedError < Exception
   end
 
   private def stubbing_instructions(request, io)
-    io << "stub_request(:" << request.method.downcase << ", "
+    io << "WebMock.stub(:" << request.method.downcase << ", "
     io << '"' << request.headers["Host"] << request.path << %[").]
     io.puts
     io << "  with("

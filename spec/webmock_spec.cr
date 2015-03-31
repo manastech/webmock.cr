@@ -197,7 +197,7 @@ Real HTTP connections are disabled. Unregistered request: POST http://www.exampl
 
 You can stub this request with the following snippet:
 
-stub_request(:post, "www.example.com/foo?a=1").
+WebMock.stub(:post, "www.example.com/foo?a=1").
   with(body: "Hello!", headers: {"Foo" => "Bar"}).
   to_return(body: "")
 MSG
