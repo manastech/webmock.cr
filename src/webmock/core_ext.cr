@@ -8,7 +8,7 @@ class HTTP::Client
     if WebMock.allows_net_connect?
       previous_def
     else
-      raise WebMock::NetConnectNotAllowedError.new
+      raise WebMock::NetConnectNotAllowedError.new(request)
     end
   end
 end
