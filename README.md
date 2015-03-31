@@ -54,6 +54,12 @@ response = HTTP::Client.post("http://www.example.com/foo",
 response.status_code        #=> 500
 response.body               #=> "oops"
 response.headers["X-Error"] #=> "true"
+
+# Executing the same request gives the same response
+response = HTTP::Client.post("http://www.example.com/foo",
+                               body: "abc",
+                               headers: HTTP::Headers{"Content-Type": "text/plain"})
+response.body               #=> "oops"
 ```
 
 ### Stub requests based on query string
