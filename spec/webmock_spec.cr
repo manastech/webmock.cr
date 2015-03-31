@@ -129,6 +129,15 @@ describe WebMock do
     end
   end
 
+  it "expects headers, allows integer" do
+    WebMock.wrap do
+      WebMock.stub(:post, "http://www.example.com").with(body: "abc", headers: {"Content-Length": 3}).to_return(body: "something")
+
+      response = HTTP::Client.post("http://www.example.com", body: "abc")
+      response.body.should eq("something")
+    end
+  end
+
   it "expects headers but doesn't match because of missing header" do
     WebMock.wrap do
       WebMock.stub(:post, "http://www.example.com").with(headers: {"foo": "bar"}).to_return(body: "something")

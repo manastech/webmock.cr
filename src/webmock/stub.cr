@@ -72,7 +72,7 @@ class WebMock::Stub
 
     expected_headers.each do |key, expected_value|
       value = request.headers[key]?
-      return false unless value == expected_value
+      return false unless value == expected_value.to_s
     end
 
     true
