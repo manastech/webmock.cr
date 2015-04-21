@@ -1,7 +1,6 @@
 class WebMock::Stub
   def initialize(@method, uri)
-    @uri = URI.parse(uri)
-    @uri = URI.parse("http://#{uri}") unless @uri.host
+    @uri = parse_uri(uri)
 
     # For to_return
     @status = 200
@@ -39,15 +38,15 @@ class WebMock::Stub
   end
 
   def matches_host?(request)
-    host = request.headers["Host"]
-    host == @uri.host
+    host_uri = parse_uri(request.headers["Host"])
+    host_uri.host == @uri.host && host_uri.port == @uri.port
   end
 
   def matches_path?(request)
     uri_path = @uri.path || "/"
     uri_query = @uri.query
 
-    request_uri = URI.parse("http://example.com#{request.path}")
+    request_uri = parse_uri("http://example.com#{request.path}")
     request_path = request_uri.path
     request_query = request_uri.query
 
@@ -80,5 +79,11 @@ class WebMock::Stub
 
   def exec
     HTTP::Response.new(@status, body: @body, headers: @headers)
+  end
+
+  private def parse_uri(uri_string)
+    uri = URI.parse(uri_string)
+    uri = URI.parse("http://#{uri_string}") unless uri.host
+    uri
   end
 end

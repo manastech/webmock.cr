@@ -18,6 +18,28 @@ describe WebMock do
     end
   end
 
+  it "stubs http request with url (example with port)" do
+    WebMock.wrap do
+      WebMock.stub :any, "http://www.example.com:8080"
+
+      response = HTTP::Client.get "http://www.example.com:8080"
+      response.status_code.should eq(200)
+      response.body.should eq("")
+      response.headers["Content-length"].should eq("0")
+    end
+  end
+
+  it "stubs http request with url (example with default port)" do
+    WebMock.wrap do
+      WebMock.stub :any, "http://www.example.com"
+
+      response = HTTP::Client.get "http://www.example.com:80"
+      response.status_code.should eq(200)
+      response.body.should eq("")
+      response.headers["Content-length"].should eq("0")
+    end
+  end
+
   it "stubs http request with uri" do
     WebMock.wrap do
       WebMock.stub :any, "www.example.com"
@@ -39,6 +61,26 @@ describe WebMock do
   it "doesn't find stub and raises" do
     expect_no_match do
       HTTP::Client.get "http://www.example.com"
+    end
+  end
+
+  it "doesn't find stub because host doesn't match" do
+    WebMock.wrap do
+      WebMock.stub :get, "www.crystal.com/foo"
+
+      expect_no_match do
+        HTTP::Client.get "http://www.example.com/foo"
+      end
+    end
+  end
+
+  it "doesn't find stub because port doesn't match" do
+    WebMock.wrap do
+      WebMock.stub :get, "www.example.com:8080/foo"
+
+      expect_no_match do
+        HTTP::Client.get "http://www.example.com/foo"
+      end
     end
   end
 
