@@ -26,26 +26,30 @@ class WebMock::NetConnectNotAllowedError < Exception
   end
 
   private def stubbing_instructions(request, io)
-    io << "WebMock.stub(:" << request.method.downcase << ", "
-    io << '"' << request.headers["Host"] << request.path << %[").]
-    io.puts
-    io << "  with("
-
     # For the instructions we remove these two headers because they are automatically
     # included in HTTP::Client requests
     headers = request.headers.dup
     headers.delete("Content-Length")
     headers.delete("Host")
 
-    if request.body
-      io << "body: "
-      request.body.inspect(io)
-      io << ", " unless headers.empty?
+    io << "WebMock.stub(:" << request.method.downcase << ", "
+    io << '"' << request.headers["Host"] << request.path << %[").]
+    io.puts
+
+    if request.body && !headers.empty?
+      io << "  with("
+
+      if request.body
+        io << "body: "
+        request.body.inspect(io)
+        io << ", " unless headers.empty?
+      end
+
+      io << "headers: " << headers.to_h unless headers.empty?
+      io << ")."
+      io.puts
     end
 
-    io << "headers: " << headers.to_h unless headers.empty?
-    io << ")."
-    io.puts
     io << %[  to_return(body: "")]
   end
 end

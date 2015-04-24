@@ -206,6 +206,25 @@ MSG
     end
   end
 
+  it "contains stubbing instructions on failure (without body not headers)" do
+    WebMock.wrap do
+      begin
+        HTTP::Client.post("http://www.example.com/foo?a=1")
+      rescue ex : WebMock::NetConnectNotAllowedError
+        ex.message.strip.should eq(
+<<-MSG
+Real HTTP connections are disabled. Unregistered request: POST http://www.example.com with headers {"Host" => "www.example.com", "Content-length" => "0"}
+
+You can stub this request with the following snippet:
+
+WebMock.stub(:post, "www.example.com/foo?a=1").
+  to_return(body: "")
+MSG
+)
+      end
+    end
+  end
+
   # Commented so that specs run fast, but uncomment to try it (it works)
   # it "allows net connect" do
   #   WebMock.wrap do
