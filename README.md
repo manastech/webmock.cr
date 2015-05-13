@@ -78,7 +78,13 @@ WebMock.reset
 
 This clears all stubs and sets `allow_net_connect` to `false`.
 
-In your specs you can use `WebMock.wrap` and a block to make sure `WebMock` is reset at the end of a spec:
+To execute this automatically before each spec, you can do:
+
+```crystal
+Spec.before_each &->WebMock.reset
+```
+
+Or, for individual specs you can use `WebMock.wrap` and a block to make sure `WebMock` is reset at the end of a spec:
 
 ```crystal
 WebMock.wrap do
