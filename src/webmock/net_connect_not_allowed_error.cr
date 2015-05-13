@@ -22,7 +22,8 @@ class WebMock::NetConnectNotAllowedError < Exception
       io << " with body "
       request.body.inspect(io)
     end
-    io << " with headers " << request.headers.to_h
+    io << " with headers "
+    headers_to_s request.headers, io
   end
 
   private def stubbing_instructions(request, io)
@@ -45,11 +46,26 @@ class WebMock::NetConnectNotAllowedError < Exception
         io << ", " unless headers.empty?
       end
 
-      io << "headers: " << headers.to_h unless headers.empty?
+      unless headers.empty?
+        io << "headers: "
+        headers_to_s headers, io
+      end
       io << ")."
       io.puts
     end
 
     io << %[  to_return(body: "")]
+  end
+
+  # TODO: use headers.to_s after Crystal 0.7.1
+  private def headers_to_s(headers, io)
+    io << "{"
+    headers.each_with_index do |key, values, index|
+      io << ", " if index > 0
+      key.inspect(io)
+      io << " => "
+      values.join(", ").inspect(io)
+    end
+    io << "}"
   end
 end
