@@ -45,6 +45,8 @@ class WebMock::Stub
 
   def matches_path?(request)
     uri_path = @uri.path || "/"
+    uri_path = "/" if uri_path.empty?
+
     uri_query = @uri.query
 
     request_uri = URI.parse("http://example.com#{request.path}")
