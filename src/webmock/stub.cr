@@ -18,7 +18,7 @@ class WebMock::Stub
   def to_return(body = "", status = 200, headers = nil)
     @body = body
     @status = status
-    @headers["Content-length"] = @body.length.to_s
+    @headers["Content-length"] = @body.size.to_s
     @headers.merge!(headers) if headers
     self
   end

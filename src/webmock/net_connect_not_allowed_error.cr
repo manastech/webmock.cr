@@ -57,12 +57,11 @@ class WebMock::NetConnectNotAllowedError < Exception
     io << %[  to_return(body: "")]
   end
 
-  # TODO: use headers.to_s after Crystal 0.7.1
   private def headers_to_s(headers, io)
     io << "{"
     headers.each_with_index do |key, values, index|
       io << ", " if index > 0
-      key.inspect(io)
+      key.name.inspect(io)
       io << " => "
       values.join(", ").inspect(io)
     end

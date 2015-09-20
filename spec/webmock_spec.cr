@@ -235,7 +235,7 @@ describe WebMock do
       rescue ex : WebMock::NetConnectNotAllowedError
         ex.message.strip.should eq(
 <<-MSG
-Real HTTP connections are disabled. Unregistered request: POST http://www.example.com with body "Hello!" with headers {"Foo" => "Bar", "Host" => "www.example.com", "Content-length" => "6"}
+Real HTTP connections are disabled. Unregistered request: POST http://www.example.com with body "Hello!" with headers {"Foo" => "Bar", "Host" => "www.example.com", "Content-Length" => "6"}
 
 You can stub this request with the following snippet:
 
@@ -255,7 +255,7 @@ MSG
       rescue ex : WebMock::NetConnectNotAllowedError
         ex.message.strip.should eq(
 <<-MSG
-Real HTTP connections are disabled. Unregistered request: POST http://www.example.com with headers {"Host" => "www.example.com", "Content-length" => "0"}
+Real HTTP connections are disabled. Unregistered request: POST http://www.example.com with headers {"Host" => "www.example.com", "Content-Length" => "0"}
 
 You can stub this request with the following snippet:
 
