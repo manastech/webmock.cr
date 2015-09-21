@@ -1,2 +1,6 @@
 name: webmock
 version: 0.1.0
+
+authors:
+  - Ary Borenszweig <aborenszweig@manas.com.ar>
+
