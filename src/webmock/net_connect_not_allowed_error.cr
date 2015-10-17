@@ -34,7 +34,7 @@ class WebMock::NetConnectNotAllowedError < Exception
     headers.delete("Host")
 
     io << "WebMock.stub(:" << request.method.downcase << ", "
-    io << '"' << request.headers["Host"] << request.path << %[").]
+    io << '"' << request.headers["Host"] << request.resource << %[").]
     io.puts
 
     if request.body && !headers.empty?

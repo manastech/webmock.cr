@@ -5,7 +5,7 @@ class WebMock::Stub
     # For to_return
     @status = 200
     @body = ""
-    @headers = HTTP::Headers { "Content-length": "0" }
+    @headers = HTTP::Headers{"Content-length": "0"}
   end
 
   def with(query = nil, body = nil, headers = nil)
@@ -48,16 +48,15 @@ class WebMock::Stub
 
     uri_query = @uri.query
 
-    request_uri = parse_uri("http://example.com#{request.path}")
+    request_uri = parse_uri("http://example.com#{request.resource}")
     request_path = request_uri.path
     request_query = request_uri.query
 
-    request_query = request_query ? CGI.parse(request_query) : {} of String => Array(String)
-    uri_query = uri_query ? CGI.parse(uri_query) : {} of String => Array(String)
+    request_query = HTTP::Params.parse(request_query || "")
+    uri_query = HTTP::Params.parse(uri_query || "")
 
     @expected_query.try &.each do |key, value|
-      entry = uri_query[key.to_s] ||= [] of String
-      entry << value.to_s
+      uri_query.add(key.to_s, value.to_s)
     end
 
     request_path == uri_path && request_query == uri_query
