@@ -1,9 +1,7 @@
 require "http/client"
 
 class HTTP::Client
-  def exec(request : HTTP::Request)
-    execute_callbacks(request)
-
+  private def exec_internal(request : HTTP::Request)
     stub = WebMock.find_stub(request)
     return stub.exec if stub
 
