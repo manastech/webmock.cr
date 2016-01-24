@@ -79,7 +79,7 @@ class WebMock::Stub
   end
 
   def exec
-    HTTP::Response.new(@status, body: @body, headers: @headers)
+    HTTP::Client::Response.new(@status, body: @body, headers: @headers)
   end
 
   private def parse_uri(uri_string)
