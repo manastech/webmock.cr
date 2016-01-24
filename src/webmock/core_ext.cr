@@ -9,7 +9,7 @@ class HTTP::Client
       request.headers["User-agent"] ||= "Crystal"
       request.to_io(socket)
       socket.flush
-      HTTP::Response.from_io(socket, request.ignore_body?).tap do |response|
+      HTTP::Client::Response.from_io(socket, request.ignore_body?).tap do |response|
         close unless response.keep_alive?
       end
     else
