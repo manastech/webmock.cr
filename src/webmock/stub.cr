@@ -1,5 +1,8 @@
 class WebMock::Stub
-  def initialize(@method, uri)
+  @uri : URI
+  @expected_headers : HTTP::Headers?
+
+  def initialize(@method : Symbol, uri)
     @uri = parse_uri(uri)
 
     # For to_return
@@ -8,7 +11,7 @@ class WebMock::Stub
     @headers = HTTP::Headers{"Content-length": "0"}
   end
 
-  def with(query = nil, body = nil, headers = nil)
+  def with(query : Hash(String, String) = nil, body : String = nil, headers = nil)
     @expected_query = query
     @expected_body = body
     @expected_headers = HTTP::Headers.new.merge!(headers) if headers

@@ -221,7 +221,7 @@ describe WebMock do
 
   it "matches with query string in with" do
     WebMock.wrap do
-      WebMock.stub(:get, "http://www.example.com").with(query: {"a": 1, "b": 2})
+      WebMock.stub(:get, "http://www.example.com").with(query: {"a": "1", "b": "2"})
 
       response = HTTP::Client.get "http://www.example.com?b=2&a=1"
       response.body.should eq("")
@@ -233,16 +233,16 @@ describe WebMock do
       begin
         HTTP::Client.post("http://www.example.com/foo?a=1", body: "Hello!", headers: HTTP::Headers{"Foo": "Bar"})
       rescue ex : WebMock::NetConnectNotAllowedError
-        ex.message.strip.should eq(
+        ex.message.not_nil!.strip.should eq(
           <<-MSG
-Real HTTP connections are disabled. Unregistered request: POST http://www.example.com with body "Hello!" with headers {"Foo" => "Bar", "Host" => "www.example.com", "Content-Length" => "6"}
+          Real HTTP connections are disabled. Unregistered request: POST http://www.example.com with body "Hello!" with headers {"Foo" => "Bar", "Host" => "www.example.com", "Content-Length" => "6"}
 
-You can stub this request with the following snippet:
+          You can stub this request with the following snippet:
 
-WebMock.stub(:post, "www.example.com/foo?a=1").
-  with(body: "Hello!", headers: {"Foo" => "Bar"}).
-  to_return(body: "")
-MSG
+          WebMock.stub(:post, "www.example.com/foo?a=1").
+            with(body: "Hello!", headers: {"Foo" => "Bar"}).
+            to_return(body: "")
+          MSG
         )
       end
     end
@@ -253,15 +253,15 @@ MSG
       begin
         HTTP::Client.post("http://www.example.com/foo?a=1")
       rescue ex : WebMock::NetConnectNotAllowedError
-        ex.message.strip.should eq(
+        ex.message.not_nil!.strip.should eq(
           <<-MSG
-Real HTTP connections are disabled. Unregistered request: POST http://www.example.com with headers {"Host" => "www.example.com", "Content-Length" => "0"}
+          Real HTTP connections are disabled. Unregistered request: POST http://www.example.com with headers {"Host" => "www.example.com", "Content-Length" => "0"}
 
-You can stub this request with the following snippet:
+          You can stub this request with the following snippet:
 
-WebMock.stub(:post, "www.example.com/foo?a=1").
-  to_return(body: "")
-MSG
+          WebMock.stub(:post, "www.example.com/foo?a=1").
+            to_return(body: "")
+          MSG
         )
       end
     end
