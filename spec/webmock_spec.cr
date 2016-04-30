@@ -279,6 +279,37 @@ describe WebMock do
     end
   end
 
+  describe ".calls" do
+    it "returns 0 by default" do
+      WebMock.wrap do
+        stub = WebMock.stub :get, "www.crystal.com/foo"
+        stub.calls.should eq(0)
+      end
+    end
+
+    it "increments by one" do
+      WebMock.wrap do
+        stub = WebMock.stub :get, "www.crystal.com/foo"
+
+        HTTP::Client.get "http://www.crystal.com/foo"
+
+        stub.calls.should eq(1)
+      end
+    end
+
+    it "increments multiple times" do
+      WebMock.wrap do
+        stub = WebMock.stub :get, "www.crystal.com/foo"
+
+        3.times do
+          HTTP::Client.get "http://www.crystal.com/foo"
+        end
+
+        stub.calls.should eq(3)
+      end
+    end
+  end
+
   # Commented so that specs run fast, but uncomment to try it (it works)
   # it "allows net connect" do
   #   WebMock.wrap do
