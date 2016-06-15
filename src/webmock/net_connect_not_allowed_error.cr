@@ -59,9 +59,9 @@ class WebMock::NetConnectNotAllowedError < Exception
 
   private def headers_to_s(headers, io)
     io << "{"
-    headers.each_with_index do |key, values, index|
+    headers.each_with_index do |(key, values), index|
       io << ", " if index > 0
-      key.name.inspect(io)
+      key.inspect(io)
       io << " => "
       values.join(", ").inspect(io)
     end

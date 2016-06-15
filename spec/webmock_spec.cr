@@ -115,7 +115,7 @@ describe WebMock do
 
   it "stubs and returns headers" do
     WebMock.wrap do
-      WebMock.stub(:get, "www.example.com").to_return(headers: {"foo": "bar"})
+      WebMock.stub(:get, "www.example.com").to_return(headers: {"foo" => "bar"})
 
       response = HTTP::Client.get "http://www.example.com"
       response.headers["Foo"].should eq("bar")
@@ -164,16 +164,16 @@ describe WebMock do
 
   it "expects headers" do
     WebMock.wrap do
-      WebMock.stub(:post, "http://www.example.com").with(headers: {"foo": "bar"}).to_return(body: "something")
+      WebMock.stub(:post, "http://www.example.com").with(headers: {"foo" => "bar"}).to_return(body: "something")
 
-      response = HTTP::Client.post("http://www.example.com", headers: HTTP::Headers{"foo": "bar"})
+      response = HTTP::Client.post("http://www.example.com", headers: HTTP::Headers{"foo" => "bar"})
       response.body.should eq("something")
     end
   end
 
   it "expects headers, allows integer" do
     WebMock.wrap do
-      WebMock.stub(:post, "http://www.example.com").with(body: "abc", headers: {"Content-Length": "3"}).to_return(body: "something")
+      WebMock.stub(:post, "http://www.example.com").with(body: "abc", headers: {"Content-Length" => "3"}).to_return(body: "something")
 
       response = HTTP::Client.post("http://www.example.com", body: "abc")
       response.body.should eq("something")
@@ -182,7 +182,7 @@ describe WebMock do
 
   it "expects headers but doesn't match because of missing header" do
     WebMock.wrap do
-      WebMock.stub(:post, "http://www.example.com").with(headers: {"foo": "bar"}).to_return(body: "something")
+      WebMock.stub(:post, "http://www.example.com").with(headers: {"foo" => "bar"}).to_return(body: "something")
 
       expect_no_match do
         HTTP::Client.post("http://www.example.com")
@@ -192,10 +192,10 @@ describe WebMock do
 
   it "expects headers but doesn't match because of wrong header value" do
     WebMock.wrap do
-      WebMock.stub(:post, "http://www.example.com").with(headers: {"foo": "bar"}).to_return(body: "something")
+      WebMock.stub(:post, "http://www.example.com").with(headers: {"foo" => "bar"}).to_return(body: "something")
 
       expect_no_match do
-        HTTP::Client.post("http://www.example.com", headers: HTTP::Headers{"foo": "baz"})
+        HTTP::Client.post("http://www.example.com", headers: HTTP::Headers{"foo" => "baz"})
       end
     end
   end
@@ -221,7 +221,7 @@ describe WebMock do
 
   it "matches with query string in with" do
     WebMock.wrap do
-      WebMock.stub(:get, "http://www.example.com").with(query: {"a": "1", "b": "2"})
+      WebMock.stub(:get, "http://www.example.com").with(query: {"a" => "1", "b" => "2"})
 
       response = HTTP::Client.get "http://www.example.com?b=2&a=1"
       response.body.should eq("")
@@ -231,11 +231,11 @@ describe WebMock do
   it "contains stubbing instructions on failure" do
     WebMock.wrap do
       begin
-        HTTP::Client.post("http://www.example.com/foo?a=1", body: "Hello!", headers: HTTP::Headers{"Foo": "Bar"})
+        HTTP::Client.post("http://www.example.com/foo?a=1", body: "Hello!", headers: HTTP::Headers{"Foo" => "Bar"})
       rescue ex : WebMock::NetConnectNotAllowedError
         ex.message.not_nil!.strip.should eq(
           <<-MSG
-          Real HTTP connections are disabled. Unregistered request: POST http://www.example.com with body "Hello!" with headers {"Foo" => "Bar", "Host" => "www.example.com", "Content-Length" => "6"}
+          Real HTTP connections are disabled. Unregistered request: POST http://www.example.com with body "Hello!" with headers {"Foo" => "Bar", "Content-Length" => "6", "Host" => "www.example.com"}
 
           You can stub this request with the following snippet:
 
@@ -255,7 +255,7 @@ describe WebMock do
       rescue ex : WebMock::NetConnectNotAllowedError
         ex.message.not_nil!.strip.should eq(
           <<-MSG
-          Real HTTP connections are disabled. Unregistered request: POST http://www.example.com with headers {"Host" => "www.example.com", "Content-Length" => "0"}
+          Real HTTP connections are disabled. Unregistered request: POST http://www.example.com with headers {"Content-Length" => "0", "Host" => "www.example.com"}
 
           You can stub this request with the following snippet:
 
@@ -269,7 +269,7 @@ describe WebMock do
 
   it "works with request callbacks" do
     WebMock.wrap do
-      WebMock.stub(:get, "http://www.example.com").with(query: {"foo": "bar"})
+      WebMock.stub(:get, "http://www.example.com").with(query: {"foo" => "bar"})
 
       client = HTTP::Client.new "http://www.example.com"
       client.before_request do |request|

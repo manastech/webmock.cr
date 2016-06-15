@@ -9,7 +9,7 @@ class WebMock::Stub
     # For to_return
     @status = 200
     @body = ""
-    @headers = HTTP::Headers{"Content-length": "0"}
+    @headers = HTTP::Headers{"Content-length" => "0"}
   end
 
   def with(query : Hash(String, String) = nil, body : String = nil, headers = nil)
@@ -74,7 +74,7 @@ class WebMock::Stub
     expected_headers = @expected_headers
     return true unless expected_headers
 
-    expected_headers.each do |key|
+    expected_headers.each do |key, value|
       request_value = request.headers[key]?
       expected_value = expected_headers[key]?
       return false unless request_value.to_s == expected_value.to_s
