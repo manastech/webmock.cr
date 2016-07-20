@@ -1,7 +1,13 @@
 require "http/client"
 
+class HTTP::Request
+  getter scheme
+  setter scheme : String = "http"
+end
+
 class HTTP::Client
   private def exec_internal(request : HTTP::Request)
+    request.scheme = "https" if tls?
     stub = WebMock.find_stub(request)
     return stub.exec if stub
 

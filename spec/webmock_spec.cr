@@ -58,9 +58,28 @@ describe WebMock do
     end
   end
 
+  it "stubs https request with url" do
+    WebMock.wrap do
+      WebMock.stub :any, "https://www.example.com"
+
+      response = HTTP::Client.get "https://www.example.com"
+      response.status_code.should eq(200)
+    end
+  end
+
   it "doesn't find stub and raises" do
     expect_no_match do
       HTTP::Client.get "http://www.example.com"
+    end
+  end
+
+  it "doesn't find stub because scheme doesn't match" do
+    WebMock.wrap do
+      WebMock.stub :get, "http://www.example.com"
+
+      expect_no_match do
+        HTTP::Client.get "https://www.example.com"
+      end
     end
   end
 
@@ -235,11 +254,11 @@ describe WebMock do
       rescue ex : WebMock::NetConnectNotAllowedError
         ex.message.not_nil!.strip.should eq(
           <<-MSG
-          Real HTTP connections are disabled. Unregistered request: POST http://www.example.com with body "Hello!" with headers {"Foo" => "Bar", "Content-Length" => "6", "Host" => "www.example.com"}
+          Real HTTP connections are disabled. Unregistered request: POST http://www.example.com/foo?a=1 with body "Hello!" with headers {"Foo" => "Bar", "Content-Length" => "6", "Host" => "www.example.com"}
 
           You can stub this request with the following snippet:
 
-          WebMock.stub(:post, "www.example.com/foo?a=1").
+          WebMock.stub(:post, "http://www.example.com/foo?a=1").
             with(body: "Hello!", headers: {"Foo" => "Bar"}).
             to_return(body: "")
           MSG
@@ -255,11 +274,30 @@ describe WebMock do
       rescue ex : WebMock::NetConnectNotAllowedError
         ex.message.not_nil!.strip.should eq(
           <<-MSG
-          Real HTTP connections are disabled. Unregistered request: POST http://www.example.com with headers {"Content-Length" => "0", "Host" => "www.example.com"}
+          Real HTTP connections are disabled. Unregistered request: POST http://www.example.com/foo?a=1 with headers {"Content-Length" => "0", "Host" => "www.example.com"}
 
           You can stub this request with the following snippet:
 
-          WebMock.stub(:post, "www.example.com/foo?a=1").
+          WebMock.stub(:post, "http://www.example.com/foo?a=1").
+            to_return(body: "")
+          MSG
+        )
+      end
+    end
+  end
+
+  it "contains stubbing instructions on failure (with https url)" do
+    WebMock.wrap do
+      begin
+        HTTP::Client.get("https://www.example.com/")
+      rescue ex : WebMock::NetConnectNotAllowedError
+        ex.message.not_nil!.strip.should eq(
+          <<-MSG
+          Real HTTP connections are disabled. Unregistered request: GET https://www.example.com/ with headers {"Host" => "www.example.com"}
+
+          You can stub this request with the following snippet:
+
+          WebMock.stub(:get, "https://www.example.com/").
             to_return(body: "")
           MSG
         )
