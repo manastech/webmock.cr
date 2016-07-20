@@ -17,7 +17,8 @@ class WebMock::NetConnectNotAllowedError < Exception
   end
 
   private def signature(request, io)
-    io << request.method << " http://" << request.headers["Host"]
+    io << request.method << " "
+    request_uri_to_s request, io
     if request.body
       io << " with body "
       request.body.inspect(io)
@@ -34,7 +35,9 @@ class WebMock::NetConnectNotAllowedError < Exception
     headers.delete("Host")
 
     io << "WebMock.stub(:" << request.method.downcase << ", "
-    io << '"' << request.headers["Host"] << request.resource << %[").]
+    io << '"'
+    request_uri_to_s request, io
+    io << %[").]
     io.puts
 
     if request.body && !headers.empty?
@@ -55,6 +58,13 @@ class WebMock::NetConnectNotAllowedError < Exception
     end
 
     io << %[  to_return(body: "")]
+  end
+
+  private def request_uri_to_s(request, io)
+    io << request.scheme
+    io << "://"
+    io << request.headers["Host"]
+    io << request.resource
   end
 
   private def headers_to_s(headers, io)

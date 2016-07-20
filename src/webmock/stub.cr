@@ -29,6 +29,7 @@ class WebMock::Stub
 
   def matches?(request)
     matches_method?(request) &&
+      matches_scheme?(request) &&
       matches_host?(request) &&
       matches_path?(request) &&
       matches_body?(request) &&
@@ -39,6 +40,10 @@ class WebMock::Stub
     return true if @method == :any
 
     @method.to_s.upcase == request.method
+  end
+
+  def matches_scheme?(request)
+    @uri.scheme == request.scheme
   end
 
   def matches_host?(request)
