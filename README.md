@@ -44,12 +44,12 @@ response.status_code #=> 200
 
 ```crystal
 WebMock.stub(:post, "www.example.com/foo").
-  with(body: "abc", headers: {"Content-Type": "text/plain"}).
-  to_return(status: 500, body: "oops", headers: {"X-Error": "true"})
+  with(body: "abc", headers: {"Content-Type" => "text/plain"}).
+  to_return(status: 500, body: "oops", headers: {"X-Error" => "true"})
 
 response = HTTP::Client.post("http://www.example.com/foo",
                                body: "abc",
-                               headers: HTTP::Headers{"Content-Type": "text/plain"})
+                               headers: HTTP::Headers{"Content-Type" => "text/plain"})
 response.status_code        #=> 500
 response.body               #=> "oops"
 response.headers["X-Error"] #=> "true"
@@ -57,7 +57,7 @@ response.headers["X-Error"] #=> "true"
 # Executing the same request gives the same response
 response = HTTP::Client.post("http://www.example.com/foo",
                                body: "abc",
-                               headers: HTTP::Headers{"Content-Type": "text/plain"})
+                               headers: HTTP::Headers{"Content-Type" => "text/plain"})
 response.body               #=> "oops"
 ```
 
@@ -65,7 +65,7 @@ response.body               #=> "oops"
 
 ```crystal
 WebMock.stub(:get, "www.example.com").
-  with(query: {page: 1, count: 10})
+  with(query: {"page" => "1", "count" => "10"})
 
 response = HTTP::Client.get("http://www.example.com?count=10&page=1")
 response.status_code #=> 200
