@@ -15,9 +15,11 @@ class HTTP::Client
       request.headers["User-agent"] ||= "Crystal"
       request.to_io(socket)
       socket.flush
-      HTTP::Client::Response.from_io(socket, request.ignore_body?).tap do |response|
+      res = HTTP::Client::Response.from_io(socket, request.ignore_body?).tap do |response|
         close unless response.keep_alive?
       end
+      WebMock.callbacks.call(:after_live_request, request, res)
+      res
     else
       raise WebMock::NetConnectNotAllowedError.new(request)
     end
