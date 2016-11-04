@@ -5,6 +5,7 @@ module WebMock
 
   @@allow_net_connect = false
   @@registry = StubRegistry.new
+  @@callbacks = CallbackRegistry.new
 
   def wrap
     yield
@@ -30,6 +31,10 @@ module WebMock
 
   def find_stub(request : HTTP::Request)
     @@registry.find_stub(request)
+  end
+
+  def callbacks
+    @@callbacks
   end
 
   # :nodoc:

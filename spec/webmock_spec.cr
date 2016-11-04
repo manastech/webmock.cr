@@ -372,7 +372,42 @@ describe WebMock do
     end
   end
 
+  it "doesn't call after_live_request if stubbed" do
+    WebMock.wrap do
+      WebMock.callbacks.add do
+        after_live_request do |request, response|
+          response.status_code.should eq "should never get here"
+        end
+      end
+      WebMock.stub(:any, "http://www.example.net:80/")
+      request = HTTP::Request.new("get", "/")
+      request.headers["Host"] = "www.example.net:80"
+      client = HTTP::Client.new("http://www.example.net")
+      response = client.exec(request)
+    end
+  end
+
   # Commented so that specs run fast, but uncomment to try it (it works)
+  #it "calls callback after live request" do
+  #  WebMock.wrap do
+  #    WebMock.callbacks.add do
+  #      after_live_request do |request, response|
+  #        response.status_code.should eq 200
+  #      end
+  #    end
+  #    WebMock.allow_net_connect = true
+  #    HTTP::Client.get("http://www.example.net")
+  #  end
+  #end
+
+  #it "doesn't error if callback is not set" do
+  #  WebMock.wrap do
+  #    WebMock.allow_net_connect = true
+  #    client = HTTP::Client.get("http://www.example.net")
+  #    client.status_code.should eq 200
+  #  end
+  #end
+
   # it "allows net connect" do
   #   WebMock.wrap do
   #     WebMock.allow_net_connect = true
