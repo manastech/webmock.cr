@@ -348,6 +348,15 @@ describe WebMock do
     end
   end
 
+  it "takes a string for the stub method" do
+    WebMock.wrap do
+      WebMock.stub("get", "http://www.example.net")
+       response = HTTP::Client.get "http://www.example.net"
+       response.status_code.should eq(200)
+       response.body.should eq("")
+    end
+  end
+
   # Commented so that specs run fast, but uncomment to try it (it works)
   # it "allows net connect" do
   #   WebMock.wrap do

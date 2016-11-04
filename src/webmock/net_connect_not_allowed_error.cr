@@ -21,7 +21,7 @@ class WebMock::NetConnectNotAllowedError < Exception
     request_uri_to_s request, io
     if request.body
       io << " with body "
-      request.body.inspect(io)
+      request.body.to_s.inspect(io)
     end
     io << " with headers "
     headers_to_s request.headers, io
@@ -45,7 +45,7 @@ class WebMock::NetConnectNotAllowedError < Exception
 
       if request.body
         io << "body: "
-        request.body.inspect(io)
+        request.body.to_s.inspect(io)
         io << ", " unless headers.empty?
       end
 
