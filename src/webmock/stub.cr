@@ -3,7 +3,7 @@ class WebMock::Stub
   @expected_headers : HTTP::Headers?
   @calls = 0
 
-  def initialize(@method : Symbol, uri)
+  def initialize(@method : Symbol | String, uri)
     @uri = parse_uri(uri)
 
     # For to_return
