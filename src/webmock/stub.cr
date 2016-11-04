@@ -72,7 +72,7 @@ class WebMock::Stub
   end
 
   def matches_body?(request)
-    @expected_body ? @expected_body == request.body : true
+    @expected_body ? @expected_body == request.body.to_s : true
   end
 
   def matches_headers?(request)
