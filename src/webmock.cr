@@ -31,4 +31,13 @@ module WebMock
   def find_stub(request : HTTP::Request)
     @@registry.find_stub(request)
   end
+
+  # :nodoc:
+  def self.body(request : HTTP::Request)
+    body = request.body.try(&.gets_to_end)
+    if body
+      request.body = MemoryIO.new(body)
+    end
+    body
+  end
 end
