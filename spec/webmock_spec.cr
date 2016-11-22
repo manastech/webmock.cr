@@ -123,6 +123,16 @@ describe WebMock do
     end
   end
 
+  it "stubs and returns body, with string method" do
+    WebMock.wrap do
+      WebMock.stub("get", "www.example.com").to_return(body: "Hello!")
+
+      response = HTTP::Client.get "http://www.example.com"
+      response.body.should eq("Hello!")
+      response.headers["Content-length"].should eq("6")
+    end
+  end
+
   it "stubs and returns status code" do
     WebMock.wrap do
       WebMock.stub(:get, "www.example.com").to_return(status: 300)

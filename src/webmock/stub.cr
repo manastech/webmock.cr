@@ -1,9 +1,11 @@
 class WebMock::Stub
+  @method : String
   @uri : URI
   @expected_headers : HTTP::Headers?
   @calls = 0
 
-  def initialize(@method : Symbol, uri)
+  def initialize(method : Symbol | String, uri)
+    @method = method.to_s.upcase
     @uri = parse_uri(uri)
 
     # For to_return
@@ -37,9 +39,9 @@ class WebMock::Stub
   end
 
   def matches_method?(request)
-    return true if @method == :any
+    return true if @method == "ANY"
 
-    @method.to_s.upcase == request.method
+    @method == request.method
   end
 
   def matches_scheme?(request)
