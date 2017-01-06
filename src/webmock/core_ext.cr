@@ -9,7 +9,7 @@ class HTTP::Client
   private def exec_internal(request : HTTP::Request)
     request.scheme = "https" if tls?
     stub = WebMock.find_stub(request)
-    return stub.exec if stub
+    return stub.exec(request) if stub
 
     if WebMock.allows_net_connect?
       request.headers["User-agent"] ||= "Crystal"

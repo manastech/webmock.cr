@@ -123,6 +123,20 @@ describe WebMock do
     end
   end
 
+  it "stubs and calls block for response" do
+    WebMock.wrap do
+      WebMock.stub(:post, "www.example.com").with(body: "Hello!").to_return do |request|
+        headers = HTTP::Headers.new.merge!({ "Content-length" => "6" })
+        HTTP::Client::Response.new(418, body: request.body.to_s.reverse, headers: headers)
+      end
+
+      response = HTTP::Client.post "http://www.example.com", body: "Hello!"
+      response.body.should eq("!olleH")
+      response.status_code.should eq(418)
+      response.headers["Content-length"].should eq("6")
+    end
+  end
+
   it "stubs and returns body, with string method" do
     WebMock.wrap do
       WebMock.stub("get", "www.example.com").to_return(body: "Hello!")

@@ -71,6 +71,31 @@ response = HTTP::Client.get("http://www.example.com?count=10&page=1")
 response.status_code #=> 200
 ```
 
+### Stub requests and provide a block for the response
+
+Your block will be called and passed the `HTTP::Request`, allowing you to construct a response dynamically based upon the request.
+
+```crystal
+WebMock.stub(:post, "www.example.com/foo").to_return do |request|
+  headers = HTTP::Headers.new.merge!({ "Content-length" => request.body.to_s.length })
+  HTTP::Client::Response.new(418, body: request.body.to_s.reverse, headers: headers)
+end
+
+response = HTTP::Client.post("http://www.example.com/foo",
+                             body: "abc",
+                             headers: HTTP::Headers{"Content-Type" => "text/plain"})
+response.status_code               #=> 418
+response.body                      #=> "cba"
+response.headers["Content-length"] #=> "3"
+
+response = HTTP::Client.post("http://www.example.com/foo",
+                             body: "olleh",
+                             headers: HTTP::Headers{"Content-Type" => "text/plain"})
+response.status_code               #=> 418
+response.body                      #=> "hello"
+response.headers["Content-length"] #=> "5"
+```
+
 ### Resetting
 
 ```crystal
