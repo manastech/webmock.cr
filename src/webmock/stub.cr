@@ -12,6 +12,10 @@ class WebMock::Stub
     @status = 200
     @body = ""
     @headers = HTTP::Headers{"Content-length" => "0"}
+
+    @block = Proc(HTTP::Request, HTTP::Client::Response).new do |request|
+      HTTP::Client::Response.new(@status, body: @body, headers: @headers)
+    end
   end
 
   def with(query : Hash(String, String) = nil, body : String = nil, headers = nil)
@@ -26,6 +30,11 @@ class WebMock::Stub
     @status = status
     @headers["Content-length"] = @body.size.to_s
     @headers.merge!(headers) if headers
+    self
+  end
+
+  def to_return(&block : HTTP::Request -> HTTP::Client::Response)
+    @block = block
     self
   end
 
@@ -90,9 +99,9 @@ class WebMock::Stub
     true
   end
 
-  def exec
+  def exec(request)
     @calls += 1
-    HTTP::Client::Response.new(@status, body: @body, headers: @headers)
+    @block.call(request)
   end
 
   def calls
