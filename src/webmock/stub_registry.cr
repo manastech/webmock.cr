@@ -16,4 +16,12 @@ struct WebMock::StubRegistry
   def find_stub(request)
     @stubs.find &.matches?(request)
   end
+
+  def consume_stub(request)
+    stub = find_stub(request)
+    if stub
+      @stubs.delete(stub)
+    end
+    stub
+  end
 end

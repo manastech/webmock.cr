@@ -8,7 +8,11 @@ end
 class HTTP::Client
   private def exec_internal(request : HTTP::Request)
     request.scheme = "https" if tls?
-    stub = WebMock.find_stub(request)
+    stub = if WebMock.consume_after_match?
+      WebMock.consume_stub(request)
+    else
+      WebMock.find_stub(request)
+    end
     return stub.exec(request) if stub
 
     if WebMock.allows_net_connect?
