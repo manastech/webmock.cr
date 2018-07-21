@@ -341,6 +341,16 @@ describe WebMock do
     end
   end
 
+  it "works with exec" do
+    WebMock.wrap do
+      WebMock.stub(:get, "http://www.example.com")
+
+      client = HTTP::Client.new "www.example.com"
+      request = HTTP::Request.new("GET", "/")
+      client.exec request
+    end
+  end
+
   describe ".calls" do
     it "returns 0 by default" do
       WebMock.wrap do

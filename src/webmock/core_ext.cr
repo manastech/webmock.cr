@@ -8,6 +8,7 @@ end
 class HTTP::Client
   private def exec_internal(request : HTTP::Request)
     request.scheme = "https" if tls?
+    request.headers["Host"] = host_header unless request.headers.has_key?("Host")
     stub = WebMock.find_stub(request)
     return stub.exec(request) if stub
 
