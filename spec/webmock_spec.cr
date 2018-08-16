@@ -333,7 +333,7 @@ describe WebMock do
     WebMock.wrap do
       WebMock.stub(:get, "http://www.example.com").with(query: {"foo" => "bar"})
 
-      client = HTTP::Client.new "http://www.example.com"
+      client = HTTP::Client.new "www.example.com"
       client.before_request do |request|
         request.query_params["foo"] = "bar"
       end
