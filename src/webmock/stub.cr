@@ -11,7 +11,7 @@ class WebMock::Stub
     # For to_return
     @status = 200
     @body = ""
-    @headers = HTTP::Headers{"Content-length" => "0"}
+    @headers = HTTP::Headers{"Content-length" => "0", "Connection" => "close"}
 
     @block = Proc(HTTP::Request, HTTP::Client::Response).new do |request|
       HTTP::Client::Response.new(@status, body: @body, headers: @headers)
