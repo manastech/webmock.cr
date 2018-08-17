@@ -32,6 +32,7 @@ class WebMock::NetConnectNotAllowedError < Exception
     # included in HTTP::Client requests
     headers = request.headers.dup
     headers.delete("Content-Length")
+    headers.delete("Connection")
     headers.delete("Host")
 
     io << "WebMock.stub(:" << request.method.downcase << ", "
