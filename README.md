@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/manastech/webmock.cr.svg?branch=master)](https://travis-ci.org/manastech/webmock.cr)
 
-Library for stubbing `HTTP::Client` requests in [Crystal](http://crystal-lang.org/). Current version requires Crystal 0.11.0.
+Library for stubbing `HTTP::Client` requests in [Crystal](http://crystal-lang.org/).
 
 Inspired by [webmock ruby gem](https://github.com/bblimke/webmock).
 
