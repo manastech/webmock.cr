@@ -4,6 +4,7 @@ module WebMock
   extend self
 
   @@allow_net_connect = false
+  @@consume_after_match = false
   @@registry = StubRegistry.new
   @@callbacks = CallbackRegistry.new
 
@@ -29,8 +30,19 @@ module WebMock
     @@allow_net_connect
   end
 
+  def consume_after_match=(@@consume_after_match)
+  end
+
+  def consume_after_match?
+    @@consume_after_match
+  end
+
   def find_stub(request : HTTP::Request)
     @@registry.find_stub(request)
+  end
+
+  def consume_stub(request : HTTP::Request)
+    @@registry.consume_stub(request)
   end
 
   def callbacks

@@ -278,12 +278,12 @@ describe WebMock do
       rescue ex : WebMock::NetConnectNotAllowedError
         ex.message.not_nil!.strip.should eq(
           <<-MSG
-          Real HTTP connections are disabled. Unregistered request: POST http://www.example.com/foo?a=1 with body "Hello!" with headers {"Foo" => "Bar", "Content-Length" => "6", "Host" => "www.example.com"}
+          Real HTTP connections are disabled. Unregistered request: POST http://www.example.com/foo?a=1 with body "Hello!" with headers {"Foo" => "Bar", "Connection" => "close", "Content-Length" => "6", "Host" => "www.example.com"}
 
           You can stub this request with the following snippet:
 
           WebMock.stub(:post, "http://www.example.com/foo?a=1").
-            with(body: "Hello!", headers: {"Foo" => "Bar"}).
+            with(body: "Hello!", headers: {"Foo" => "Bar", "Connection" => "close"}).
             to_return(body: "")
           MSG
         )
@@ -298,7 +298,7 @@ describe WebMock do
       rescue ex : WebMock::NetConnectNotAllowedError
         ex.message.not_nil!.strip.should eq(
           <<-MSG
-          Real HTTP connections are disabled. Unregistered request: POST http://www.example.com/foo?a=1 with headers {"Content-Length" => "0", "Host" => "www.example.com"}
+          Real HTTP connections are disabled. Unregistered request: POST http://www.example.com/foo?a=1 with headers {"Connection" => "close", "Content-Length" => "0", "Host" => "www.example.com"}
 
           You can stub this request with the following snippet:
 
@@ -317,7 +317,7 @@ describe WebMock do
       rescue ex : WebMock::NetConnectNotAllowedError
         ex.message.not_nil!.strip.should eq(
           <<-MSG
-          Real HTTP connections are disabled. Unregistered request: GET https://www.example.com/ with headers {"Host" => "www.example.com"}
+          Real HTTP connections are disabled. Unregistered request: GET https://www.example.com/ with headers {"Connection" => "close", "Host" => "www.example.com"}
 
           You can stub this request with the following snippet:
 
@@ -338,6 +338,16 @@ describe WebMock do
         request.query_params["foo"] = "bar"
       end
       client.get "/"
+    end
+  end
+
+  it "works with exec" do
+    WebMock.wrap do
+      WebMock.stub(:get, "http://www.example.com")
+
+      client = HTTP::Client.new "www.example.com"
+      request = HTTP::Request.new("GET", "/")
+      client.exec request
     end
   end
 
