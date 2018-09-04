@@ -1,13 +1,13 @@
 class WebMock::Stub
   @method : String
-  @uri : URI
+  @uri : String | Regex
   @expected_headers : HTTP::Headers?
   @calls = 0
   @body_io : IO?
 
-  def initialize(method : Symbol | String, uri)
+  def initialize(method : Symbol | String, uri : String | Regex)
     @method = method.to_s.upcase
-    @uri = parse_uri(uri)
+    @uri = uri
 
     # For to_return
     @status = 200
@@ -53,11 +53,22 @@ class WebMock::Stub
 
   def matches?(request)
     matches_method?(request) &&
-      matches_scheme?(request) &&
-      matches_host?(request) &&
-      matches_path?(request) &&
+      matches_uri?(request) &&
       matches_body?(request) &&
       matches_headers?(request)
+  end
+
+  def matches_uri?(request)
+    uri = @uri
+    case uri
+    when String
+      u = parse_uri(uri)
+      matches_scheme?(request, u) &&
+        matches_host?(request, u) &&
+        matches_path?(request, u)
+    else
+      uri =~ request.full_uri
+    end
   end
 
   def matches_method?(request)
@@ -66,20 +77,20 @@ class WebMock::Stub
     @method == request.method
   end
 
-  def matches_scheme?(request)
-    @uri.scheme == request.scheme
+  def matches_scheme?(request, uri)
+    uri.scheme == request.scheme
   end
 
-  def matches_host?(request)
+  def matches_host?(request, uri)
     host_uri = parse_uri(request.headers["Host"])
-    host_uri.host == @uri.host && host_uri.port == @uri.port
+    host_uri.host == uri.host && host_uri.port == uri.port
   end
 
-  def matches_path?(request)
-    uri_path = @uri.path || "/"
+  def matches_path?(request, uri)
+    uri_path = uri.path || "/"
     uri_path = "/" if uri_path.empty?
 
-    uri_query = @uri.query
+    uri_query = uri.query
 
     request_uri = parse_uri(request.resource)
     request_path = request_uri.path

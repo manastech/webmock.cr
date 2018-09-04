@@ -521,6 +521,22 @@ describe WebMock do
     end
   end
 
+  it "stubs http request with url regex" do
+    WebMock.wrap do
+      WebMock.stub :any, /www\.example\.com/
+
+      response = HTTP::Client.get "http://www.example.com/foo"
+      response.status_code.should eq(200)
+      response.body.should eq("")
+      response.headers["Content-length"].should eq("0")
+
+      response = HTTP::Client.get "http://www.example.com/bar"
+      response.status_code.should eq(200)
+      response.body.should eq("")
+      response.headers["Content-length"].should eq("0")
+    end
+  end
+
   # Commented so that specs run fast, but uncomment to try it (it works)
   # it "calls callback after live request" do
   #  WebMock.wrap do

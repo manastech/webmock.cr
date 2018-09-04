@@ -3,6 +3,10 @@ require "http/client"
 class HTTP::Request
   getter scheme
   setter scheme : String = "http"
+
+  def full_uri
+    "#{scheme}://#{host_with_port}#{resource}"
+  end
 end
 
 class HTTP::Client
