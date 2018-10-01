@@ -3,6 +3,7 @@ class WebMock::Stub
   @uri : URI
   @expected_headers : HTTP::Headers?
   @calls = 0
+  @body_io : IO?
 
   def initialize(method : Symbol | String, uri)
     @method = method.to_s.upcase
@@ -14,7 +15,7 @@ class WebMock::Stub
     @headers = HTTP::Headers{"Content-length" => "0", "Connection" => "close"}
 
     @block = Proc(HTTP::Request, HTTP::Client::Response).new do |request|
-      HTTP::Client::Response.new(@status, body: @body, headers: @headers)
+      HTTP::Client::Response.new(@status, body: @body, headers: @headers, body_io: @body_io)
     end
   end
 
@@ -25,10 +26,22 @@ class WebMock::Stub
     self
   end
 
-  def to_return(body = "", status = 200, headers = nil)
+  def to_return(body : String? = "", status = 200, headers = nil)
     @body = body
+    @body_io = nil
     @status = status
-    @headers["Content-length"] = @body.size.to_s
+    @headers.delete("Transfer-encoding")
+    @headers["Content-length"] = body.size.to_s
+    @headers.merge!(headers) if headers
+    self
+  end
+
+  def to_return(body_io : IO, status = 200, headers = nil)
+    @body = nil
+    @body_io = body_io
+    @status = status
+    @headers.delete("Content-length")
+    @headers["Transfer-encoding"] = "chunked"
     @headers.merge!(headers) if headers
     self
   end
