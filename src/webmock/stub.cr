@@ -1,4 +1,6 @@
 class WebMock::Stub
+  getter :method, :uri, :expected_headers, :expected_body, :expected_query
+
   @method : String
   @uri : URI
   @expected_headers : HTTP::Headers?
