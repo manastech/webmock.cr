@@ -68,8 +68,9 @@ class WebMock::Stub
 
     uri_query = @uri.query
 
-    request_uri = parse_uri("http://example.com#{request.resource}")
+    request_uri = parse_uri(request.resource)
     request_path = request_uri.path
+    request_path = "/" if request_path.to_s.empty?
     request_query = request_uri.query
 
     request_query = HTTP::Params.parse(request_query || "")
@@ -78,7 +79,6 @@ class WebMock::Stub
     @expected_query.try &.each do |key, value|
       uri_query.add(key.to_s, value.to_s)
     end
-
     request_path == uri_path && request_query == uri_query
   end
 
