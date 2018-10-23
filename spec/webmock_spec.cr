@@ -67,6 +67,45 @@ describe WebMock do
     end
   end
 
+  it "works with HTTP::Request with full url as #resource" do
+    WebMock.wrap do
+      WebMock.stub :post, "https://www.example.com/test"
+
+      url = "https://www.example.com/test"
+      request = HTTP::Request.new("POST", url)
+      uri = URI.parse(url)
+      client = HTTP::Client.new(uri)
+      response = client.exec(request)
+      response.status_code.should eq(200)
+    end
+  end
+
+  it "works with HTTP::Request with full url as #resource, no path" do
+    WebMock.wrap do
+      WebMock.stub :post, "https://www.example.com"
+
+      url = "https://www.example.com"
+      request = HTTP::Request.new("POST", url)
+      uri = URI.parse(url)
+      client = HTTP::Client.new(uri)
+      response = client.exec(request)
+      response.status_code.should eq(200)
+    end
+  end
+
+  it "works with HTTP::Request with only a path" do
+    WebMock.wrap do
+      WebMock.stub :post, "https://www.example.com/test"
+
+      url = "https://www.example.com/test"
+      uri = URI.parse(url)
+      request = HTTP::Request.new("POST", uri.full_path)
+      client = HTTP::Client.new(uri)
+      response = client.exec(request)
+      response.status_code.should eq(200)
+    end
+  end
+
   it "doesn't find stub and raises" do
     expect_no_match do
       HTTP::Client.get "http://www.example.com"
@@ -126,7 +165,7 @@ describe WebMock do
   it "stubs and calls block for response" do
     WebMock.wrap do
       WebMock.stub(:post, "www.example.com").with(body: "Hello!").to_return do |request|
-        headers = HTTP::Headers.new.merge!({ "Content-length" => "6" })
+        headers = HTTP::Headers.new.merge!({"Content-length" => "6"})
         HTTP::Client::Response.new(418, body: request.body.to_s.reverse, headers: headers)
       end
 
@@ -388,7 +427,7 @@ describe WebMock do
   end
 
   # Commented so that specs run fast, but uncomment to try it (it works)
-  #it "calls callback after live request" do
+  # it "calls callback after live request" do
   #  WebMock.wrap do
   #    WebMock.callbacks.add do
   #      after_live_request do |request, response|
@@ -398,15 +437,15 @@ describe WebMock do
   #    WebMock.allow_net_connect = true
   #    HTTP::Client.get("http://www.example.net")
   #  end
-  #end
+  # end
 
-  #it "doesn't error if callback is not set" do
+  # it "doesn't error if callback is not set" do
   #  WebMock.wrap do
   #    WebMock.allow_net_connect = true
   #    client = HTTP::Client.get("http://www.example.net")
   #    client.status_code.should eq 200
   #  end
-  #end
+  # end
 
   # it "allows net connect" do
   #   WebMock.wrap do
