@@ -65,7 +65,8 @@ class WebMock::NetConnectNotAllowedError < Exception
     io << request.scheme
     io << "://"
     io << request.headers["Host"]
-    io << request.resource
+    io << request.path
+    io << "?#{request.query}" if request.query
   end
 
   private def headers_to_s(headers, io)
