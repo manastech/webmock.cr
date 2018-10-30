@@ -1,4 +1,6 @@
 struct WebMock::StubRegistry
+  getter :stubs
+
   def initialize
     @stubs = [] of Stub
   end

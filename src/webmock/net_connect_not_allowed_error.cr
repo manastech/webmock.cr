@@ -13,6 +13,7 @@ class WebMock::NetConnectNotAllowedError < Exception
       io << "\n\n"
       stubbing_instructions(request, io)
       io << "\n\n"
+      registered_requests(io)
     end
   end
 
@@ -59,6 +60,14 @@ class WebMock::NetConnectNotAllowedError < Exception
     end
 
     io << %[  to_return(body: "")]
+  end
+
+  private def registered_requests(io)
+    return if WebMock.stubs.empty?
+    io << "Registered request stubs:"
+    io << "\n\n"
+    WebMock.stubs.each { |stub| io << StubSnippet.new(stub).to_s }
+    io << "\n\n"
   end
 
   private def request_uri_to_s(request, io)

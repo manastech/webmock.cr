@@ -33,6 +33,10 @@ module WebMock
     @@registry.find_stub(request)
   end
 
+  def stubs
+    @@registry.stubs
+  end
+
   def callbacks
     @@callbacks
   end

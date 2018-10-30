@@ -126,7 +126,7 @@ describe WebMock do
   it "stubs and calls block for response" do
     WebMock.wrap do
       WebMock.stub(:post, "www.example.com").with(body: "Hello!").to_return do |request|
-        headers = HTTP::Headers.new.merge!({ "Content-length" => "6" })
+        headers = HTTP::Headers.new.merge!({"Content-length" => "6"})
         HTTP::Client::Response.new(418, body: request.body.to_s.reverse, headers: headers)
       end
 
@@ -329,6 +329,120 @@ describe WebMock do
     end
   end
 
+  it "contains registered stubs on failure" do
+    WebMock.wrap do
+      WebMock.stub(:get, "https://test.example.com")
+      begin
+        HTTP::Client.get("https://www.example.com/")
+      rescue ex : WebMock::NetConnectNotAllowedError
+        ex.message.not_nil!.strip.should eq(
+          <<-MSG
+          Real HTTP connections are disabled. Unregistered request: GET https://www.example.com/ with headers {"Connection" => "close", "Host" => "www.example.com"}
+
+          You can stub this request with the following snippet:
+
+          WebMock.stub(:get, "https://www.example.com/").
+            to_return(body: "")
+
+          Registered request stubs:
+
+          stub(:get, "https://test.example.com")
+          MSG
+        )
+      end
+    end
+  end
+
+  it "contains registered stubs on failure (with headers)" do
+    WebMock.wrap do
+      WebMock.stub(:post, "https://test.example.com").with(headers: {"Content-Type" => "application/json"})
+      begin
+        HTTP::Client.get("https://www.example.com/")
+      rescue ex : WebMock::NetConnectNotAllowedError
+        ex.message.not_nil!.strip.should eq(
+          <<-MSG
+          Real HTTP connections are disabled. Unregistered request: GET https://www.example.com/ with headers {"Connection" => "close", "Host" => "www.example.com"}
+
+          You can stub this request with the following snippet:
+
+          WebMock.stub(:get, "https://www.example.com/").
+            to_return(body: "")
+
+          Registered request stubs:
+
+          stub(:post, "https://test.example.com").
+            with(
+              headers: {
+                "Content-Type" => "application/json"
+              }
+            )
+          )
+          MSG
+        )
+      end
+    end
+  end
+
+  it "contains registered stubs on failure (with body)" do
+    WebMock.wrap do
+      WebMock.stub(:post, "https://test.example.com").with(body: "line1\nline2")
+      begin
+        HTTP::Client.get("https://www.example.com/")
+      rescue ex : WebMock::NetConnectNotAllowedError
+        ex.message.not_nil!.strip.should eq(
+          <<-MSG
+          Real HTTP connections are disabled. Unregistered request: GET https://www.example.com/ with headers {"Connection" => "close", "Host" => "www.example.com"}
+
+          You can stub this request with the following snippet:
+
+          WebMock.stub(:get, "https://www.example.com/").
+            to_return(body: "")
+
+          Registered request stubs:
+
+          stub(:post, "https://test.example.com").
+            with(
+              body: "line1\\nline2"
+            )
+          )
+          MSG
+        )
+      end
+    end
+  end
+
+  it "contains registered stubs on failure (with headers and body)" do
+    WebMock.wrap do
+      WebMock.stub(:post, "https://test.example.com").with(body: "line1\nline2", headers: {"Content-Type" => "application/json", "Accept" => "*/*"})
+      begin
+        HTTP::Client.get("https://www.example.com/")
+      rescue ex : WebMock::NetConnectNotAllowedError
+        ex.message.not_nil!.strip.should eq(
+          <<-MSG
+          Real HTTP connections are disabled. Unregistered request: GET https://www.example.com/ with headers {"Connection" => "close", "Host" => "www.example.com"}
+
+          You can stub this request with the following snippet:
+
+          WebMock.stub(:get, "https://www.example.com/").
+            to_return(body: "")
+
+          Registered request stubs:
+
+          stub(:post, "https://test.example.com").
+            with(
+              body: "line1\\nline2",
+              headers: {
+                "Content-Type" => "application/json",
+                "Accept" => "*/*"
+              }
+            )
+          )
+          MSG
+        )
+      end
+    end
+  end
+
   it "works with request callbacks" do
     WebMock.wrap do
       WebMock.stub(:get, "http://www.example.com").with(query: {"foo" => "bar"})
@@ -388,7 +502,7 @@ describe WebMock do
   end
 
   # Commented so that specs run fast, but uncomment to try it (it works)
-  #it "calls callback after live request" do
+  # it "calls callback after live request" do
   #  WebMock.wrap do
   #    WebMock.callbacks.add do
   #      after_live_request do |request, response|
@@ -398,15 +512,15 @@ describe WebMock do
   #    WebMock.allow_net_connect = true
   #    HTTP::Client.get("http://www.example.net")
   #  end
-  #end
+  # end
 
-  #it "doesn't error if callback is not set" do
+  # it "doesn't error if callback is not set" do
   #  WebMock.wrap do
   #    WebMock.allow_net_connect = true
   #    client = HTTP::Client.get("http://www.example.net")
   #    client.status_code.should eq 200
   #  end
-  #end
+  # end
 
   # it "allows net connect" do
   #   WebMock.wrap do
