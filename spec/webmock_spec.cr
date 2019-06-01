@@ -371,15 +371,15 @@ describe WebMock do
   it "contains stubbing instructions on failure (with HTTP:Request and no path)" do
     WebMock.wrap do
       error_msg = <<-MSG
-      Real HTTP connections are disabled. Unregistered request: GET https://www.example.com with headers {"Host" => "www.example.com"}
+      Real HTTP connections are disabled. Unregistered request: GET https://www.example.com/ with headers {"Host" => "www.example.com"}
 
       You can stub this request with the following snippet:
 
-      WebMock.stub(:get, "https://www.example.com").
+      WebMock.stub(:get, "https://www.example.com/").
         to_return(body: "")
       MSG
       expect_raises WebMock::NetConnectNotAllowedError, error_msg do
-        url = "https://www.example.com"
+        url = "https://www.example.com/"
         request = HTTP::Request.new("GET", url)
         uri = URI.parse(url)
         HTTP::Client.new(uri).exec(request)
