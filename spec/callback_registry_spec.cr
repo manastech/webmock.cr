@@ -1,5 +1,4 @@
 describe WebMock::CallbackRegistry do
-
   it "takes a block" do
     callback = WebMock::CallbackRegistry.new
     callback.add do

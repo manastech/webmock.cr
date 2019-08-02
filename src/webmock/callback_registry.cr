@@ -1,5 +1,4 @@
 class WebMock::CallbackRegistry
-
   getter callbacks
 
   def initialize

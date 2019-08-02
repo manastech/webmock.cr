@@ -459,7 +459,7 @@ describe WebMock do
       WebMock.stub(:any, "http://www.example.net:80/")
       request = HTTP::Request.new("get", "/")
       request.headers["Host"] = "www.example.net:80"
-      client = HTTP::Client.new("http://www.example.net")
+      client = HTTP::Client.new("www.example.net")
       response = client.exec(request)
     end
   end
