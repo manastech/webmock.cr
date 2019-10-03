@@ -47,6 +47,10 @@ class WebMock::Stub
       matches_headers?(request)
   end
 
+  def matches?(method : String, uri : URI)
+    (@method == "ANY" || @method == method) && (@uri == uri)
+  end
+
   def matches_method?(request)
     return true if @method == "ANY"
 

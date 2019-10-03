@@ -96,6 +96,38 @@ response.body                      #=> "hello"
 response.headers["Content-length"] #=> "5"
 ```
 
+### Verify the number of requests for a given method+uri combination
+
+```crystal
+# No matching requests yet
+WebMock.stub(:get, "http://example.com")
+WebMock.should_not have_requested(:get, "http://example.com")
+WebMock.should_not have_requested(:get, "http://example.com").once
+WebMock.should_not have_requested(:get, "http://example.com").at_least_n_times(2)
+WebMock.should have_requested(:get, "http://example.com").at_most_n_times(2)
+
+# 1 matching request!
+response = HTTP::Client.get "http://example.com"
+WebMock.should have_requested(:get, "http://example.com")
+WebMock.should have_requested(:get, "http://example.com").once
+WebMock.should_not have_requested(:get, "http://example.com").at_least_n_times(2)
+WebMock.should have_requested(:get, "http://example.com").at_most_n_times(2)
+
+# 2 matching requests!
+response = HTTP::Client.get "http://example.com"
+WebMock.should have_requested(:get, "http://example.com")
+WebMock.should_not have_requested(:get, "http://example.com").once
+WebMock.should have_requested(:get, "http://example.com").at_least_n_times(2)
+WebMock.should have_requested(:get, "http://example.com").at_most_n_times(2)
+
+# 3 matching requests!
+response = HTTP::Client.get "http://example.com"
+WebMock.should have_requested(:get, "http://example.com")
+WebMock.should_not have_requested(:get, "http://example.com").once
+WebMock.should have_requested(:get, "http://example.com").at_least_n_times(2)
+WebMock.should_not have_requested(:get, "http://example.com").at_most_n_times(2)
+```
+
 ### Resetting
 
 ```crystal

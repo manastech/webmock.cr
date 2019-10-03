@@ -16,4 +16,8 @@ struct WebMock::StubRegistry
   def find_stub(request)
     @stubs.find &.matches?(request)
   end
+
+  def find_stub(method : String, uri : URI)
+    @stubs.find &.matches?(method, uri)
+  end
 end
