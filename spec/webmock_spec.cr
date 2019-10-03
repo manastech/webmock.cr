@@ -466,7 +466,7 @@ describe WebMock do
 
   describe "have_requested(method, uri) expectation for use with spec" do
     it "matches successfully when a matching request has been made at least once" do
-      WebMock.wrap do 
+      WebMock.wrap do
         WebMock.stub :get, "http://example.com"
 
         response = HTTP::Client.get "http://example.com"
@@ -477,7 +477,7 @@ describe WebMock do
     end
 
     it "matches with .once successfully only when exactly 1 matching request has been made" do
-      WebMock.wrap do 
+      WebMock.wrap do
         WebMock.stub :get, "http://example.com"
 
         WebMock.should_not have_requested(:get, "http://example.com").once
@@ -489,7 +489,7 @@ describe WebMock do
     end
 
     it "matches with .times(n) successfully only when exactly n matching request has been made" do
-      WebMock.wrap do 
+      WebMock.wrap do
         WebMock.stub :get, "http://example.com"
 
         WebMock.should_not have_requested(:get, "http://example.com").times(2)
@@ -501,7 +501,7 @@ describe WebMock do
     end
 
     it "matches correctly with .at_least_n_times(n)" do
-      WebMock.wrap do 
+      WebMock.wrap do
         WebMock.stub :get, "http://example.com"
 
         WebMock.should_not have_requested(:get, "http://example.com").at_least_n_times(2)
@@ -517,7 +517,7 @@ describe WebMock do
     end
 
     it "matches correctly with .at_most_n_times(n)" do
-      WebMock.wrap do 
+      WebMock.wrap do
         WebMock.stub :get, "http://example.com"
 
         WebMock.should have_requested(:get, "http://example.com").at_most_n_times(2)

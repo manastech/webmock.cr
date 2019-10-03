@@ -34,7 +34,7 @@ module WebMock
   end
 
   def find_stub(method : String, uri : URI)
-	  @@registry.find_stub(method, uri)
+    @@registry.find_stub(method, uri)
   end
 
   def callbacks
