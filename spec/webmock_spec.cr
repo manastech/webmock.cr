@@ -464,6 +464,63 @@ describe WebMock do
     end
   end
 
+  context "with body_io" do
+    it "allows reading the body" do
+      WebMock.wrap do
+        WebMock.stub(:get, "http://www.example.com").to_return(body_io: IO::Memory.new("Hello!"))
+
+        body = HTTP::Client.get("http://www.example.com").body
+        body.should eq("Hello!")
+      end
+    end
+
+    it "sets content-length header correctly" do
+      WebMock.wrap do
+        WebMock.stub(:get, "http://www.example.com").to_return(body_io: IO::Memory.new("Hello!"))
+
+        headers = HTTP::Client.get("http://www.example.com").headers
+        headers["Content-length"].should eq("6")
+      end
+    end
+  end
+
+  context "with yielding method variants" do
+    it "stubs the request" do
+      WebMock.wrap do
+        stub = WebMock.stub(:get, "http://www.example.com")
+
+        HTTP::Client.get("http://www.example.com") do |response|
+        end
+
+        stub.calls.should eq(1)
+      end
+    end
+
+    it "allows setting and reading body_io" do
+      WebMock.wrap do
+        WebMock.stub(:get, "http://www.example.com").to_return(body_io: IO::Memory.new("Hello!"))
+
+        body = HTTP::Client.get("http://www.example.com") do |response|
+          response.body_io.gets_to_end
+        end
+
+        body.should eq("Hello!")
+      end
+    end
+
+    it "sets transfer encoding header to chunked" do
+      WebMock.wrap do
+        WebMock.stub(:get, "http://www.example.com").to_return(body_io: IO::Memory.new("Hello!"))
+
+        headers = HTTP::Client.get("http://www.example.com") do |response|
+          response.headers
+        end
+
+        headers.not_nil!["Transfer-encoding"].should eq("chunked")
+      end
+    end
+  end
+
   describe "have_requested(method, uri) expectation for use with spec" do
     it "matches successfully when a matching request has been made at least once" do
       WebMock.wrap do
