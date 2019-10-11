@@ -19,10 +19,10 @@ class HaveRequestedExpectation
 
   def negative_failure_message(target : WebMock)
     stub = target.find_stub(@method, @uri)
-    actual_call_count = 
+    actual_call_count =
       if stub
         stub.calls
-      else 
+      else
         0
       end
     "Expected no #{@method} requests to #{@uri}, but #{actual_call_count} request(s) matched"
