@@ -101,31 +101,15 @@ response.headers["Content-length"] #=> "5"
 ```crystal
 # No matching requests yet
 WebMock.stub(:get, "http://example.com")
-WebMock.should_not have_requested(:get, "http://example.com")
-WebMock.should_not have_requested(:get, "http://example.com").once
-WebMock.should_not have_requested(:get, "http://example.com").at_least_n_times(2)
-WebMock.should have_requested(:get, "http://example.com").at_most_n_times(2)
+WebMock.should_not have_requested(:get, "http://example.com") # passes since no matching requests have been made
 
 # 1 matching request!
 response = HTTP::Client.get "http://example.com"
-WebMock.should have_requested(:get, "http://example.com")
-WebMock.should have_requested(:get, "http://example.com").once
-WebMock.should_not have_requested(:get, "http://example.com").at_least_n_times(2)
-WebMock.should have_requested(:get, "http://example.com").at_most_n_times(2)
+WebMock.should have_requested(:get, "http://example.com") # passes now that at least one request matched
 
 # 2 matching requests!
 response = HTTP::Client.get "http://example.com"
-WebMock.should have_requested(:get, "http://example.com")
-WebMock.should_not have_requested(:get, "http://example.com").once
-WebMock.should have_requested(:get, "http://example.com").at_least_n_times(2)
-WebMock.should have_requested(:get, "http://example.com").at_most_n_times(2)
-
-# 3 matching requests!
-response = HTTP::Client.get "http://example.com"
-WebMock.should have_requested(:get, "http://example.com")
-WebMock.should_not have_requested(:get, "http://example.com").once
-WebMock.should have_requested(:get, "http://example.com").at_least_n_times(2)
-WebMock.should_not have_requested(:get, "http://example.com").at_most_n_times(2)
+WebMock.should have_requested(:get, "http://example.com") # still passes, since at least one request matched
 ```
 
 ### Resetting
