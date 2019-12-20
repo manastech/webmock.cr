@@ -1,13 +1,18 @@
 class WebMock::Stub
   @method : String
-  @uri : String | Regex
+  @uri : URI | Regex
   @expected_headers : HTTP::Headers?
   @calls = 0
   @body_io : IO?
 
   def initialize(method : Symbol | String, uri : String | Regex)
     @method = method.to_s.upcase
-    @uri = uri
+    @uri = case uri
+           when String
+             parse_uri(uri)
+           else
+             uri
+           end
 
     # For to_return
     @status = 200
@@ -61,11 +66,10 @@ class WebMock::Stub
   def matches_uri?(request)
     uri = @uri
     case uri
-    when String
-      u = parse_uri(uri)
-      matches_scheme?(request, u) &&
-        matches_host?(request, u) &&
-        matches_path?(request, u)
+    when URI
+      matches_scheme?(request, uri) &&
+        matches_host?(request, uri) &&
+        matches_path?(request, uri)
     else
       uri =~ request.full_uri
     end
