@@ -470,7 +470,6 @@ describe WebMock do
         WebMock.stub(:get, "http://www.example.com").to_return(body_io: IO::Memory.new("Hello!"))
 
         body = HTTP::Client.get("http://www.example.com").body
-        body.should eq("Hello!")
       end
     end
 
