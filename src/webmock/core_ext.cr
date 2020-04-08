@@ -1,8 +1,7 @@
 require "http/client"
 
 class HTTP::Request
-  getter scheme
-  setter scheme : String = "http"
+  property scheme : String = "http"
 
   def full_uri
     "#{scheme}://#{host_with_port}#{resource}"
@@ -11,8 +10,7 @@ end
 
 class HTTP::Client
   private def exec_internal(request : HTTP::Request)
-    response = exec_internal(request) { |res| res }
-    response.tap do |response|
+    exec_internal(request, &.itself).tap do |response|
       response.consume_body_io
       response.headers.delete("Transfer-encoding")
       response.headers["Content-length"] = response.body.bytesize.to_s

@@ -7,19 +7,14 @@ class WebMock::Stub
 
   def initialize(method : Symbol | String, uri : String | Regex)
     @method = method.to_s.upcase
-    @uri = case uri
-           when String
-             parse_uri(uri)
-           else
-             uri
-           end
+    @uri = uri.is_a?(String) ? parse_uri(uri) : uri
 
     # For to_return
     @status = 200
     @body = ""
     @headers = HTTP::Headers{"Content-length" => "0", "Connection" => "close"}
 
-    @block = Proc(HTTP::Request, HTTP::Client::Response).new do |request|
+    @block = Proc(HTTP::Request, HTTP::Client::Response).new do |_request|
       HTTP::Client::Response.new(@status, body: @body, headers: @headers, body_io: @body_io)
     end
   end
@@ -64,13 +59,12 @@ class WebMock::Stub
   end
 
   def matches_uri?(request)
-    uri = @uri
-    case uri
+    case uri = @uri
     when URI
       matches_scheme?(request, uri) &&
         matches_host?(request, uri) &&
         matches_path?(request, uri)
-    else
+    when Regex
       uri =~ request.full_uri
     end
   end
@@ -91,14 +85,11 @@ class WebMock::Stub
   end
 
   def matches_path?(request, uri)
-    uri_path = uri.path || "/"
-    uri_path = "/" if uri_path.empty?
-
+    uri_path = uri.path.presence || "/"
     uri_query = uri.query
 
     request_uri = parse_uri(request.resource)
-    request_path = request_uri.path
-    request_path = "/" if request_path.to_s.empty?
+    request_path = request_uri.path.presence || "/"
     request_query = request_uri.query
 
     request_query = HTTP::Params.parse(request_query || "")
@@ -118,7 +109,7 @@ class WebMock::Stub
     expected_headers = @expected_headers
     return true unless expected_headers
 
-    expected_headers.each do |key, value|
+    expected_headers.each do |key, _|
       request_value = request.headers[key]?
       expected_value = expected_headers[key]?
       return false unless request_value.to_s == expected_value.to_s

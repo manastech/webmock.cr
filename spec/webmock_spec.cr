@@ -452,7 +452,7 @@ describe WebMock do
   it "doesn't call after_live_request if stubbed" do
     WebMock.wrap do
       WebMock.callbacks.add do
-        after_live_request do |request, response|
+        after_live_request do |_request, response|
           response.status_code.should eq "should never get here"
         end
       end
@@ -460,7 +460,7 @@ describe WebMock do
       request = HTTP::Request.new("get", "/")
       request.headers["Host"] = "www.example.net:80"
       client = HTTP::Client.new("www.example.net")
-      response = client.exec(request)
+      client.exec(request)
     end
   end
 
@@ -489,8 +489,7 @@ describe WebMock do
       WebMock.wrap do
         stub = WebMock.stub(:get, "http://www.example.com")
 
-        HTTP::Client.get("http://www.example.com") do |response|
-        end
+        HTTP::Client.get("http://www.example.com") { }
 
         stub.calls.should eq(1)
       end
