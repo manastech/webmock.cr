@@ -5,7 +5,7 @@ struct WebMock::StubRegistry
 
   def stub(method, uri)
     stub = Stub.new(method, uri)
-    @stubs << stub
+    @stubs.unshift(stub)
     stub
   end
 
