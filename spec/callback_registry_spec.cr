@@ -2,7 +2,7 @@ describe WebMock::CallbackRegistry do
   it "takes a block" do
     callback = WebMock::CallbackRegistry.new
     callback.add do
-      after_live_request do |request, response|
+      after_live_request do
         "live_request"
       end
     end

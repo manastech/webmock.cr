@@ -452,7 +452,7 @@ describe WebMock do
   it "doesn't call after_live_request if stubbed" do
     WebMock.wrap do
       WebMock.callbacks.add do
-        after_live_request do |request, response|
+        after_live_request do |_request, response|
           response.status_code.should eq "should never get here"
         end
       end
@@ -460,7 +460,7 @@ describe WebMock do
       request = HTTP::Request.new("get", "/")
       request.headers["Host"] = "www.example.net:80"
       client = HTTP::Client.new("www.example.net")
-      response = client.exec(request)
+      client.exec(request)
     end
   end
 
@@ -489,8 +489,7 @@ describe WebMock do
       WebMock.wrap do
         stub = WebMock.stub(:get, "http://www.example.com")
 
-        HTTP::Client.get("http://www.example.com") do |response|
-        end
+        HTTP::Client.get("http://www.example.com") { }
 
         stub.calls.should eq(1)
       end
@@ -518,6 +517,22 @@ describe WebMock do
 
         headers.not_nil!["Transfer-encoding"].should eq("chunked")
       end
+    end
+  end
+
+  it "stubs http request with url regex" do
+    WebMock.wrap do
+      WebMock.stub :any, /www\.example\.com/
+
+      response = HTTP::Client.get "http://www.example.com/foo"
+      response.status_code.should eq(200)
+      response.body.should eq("")
+      response.headers["Content-length"].should eq("0")
+
+      response = HTTP::Client.get "http://www.example.com/bar"
+      response.status_code.should eq(200)
+      response.body.should eq("")
+      response.headers["Content-length"].should eq("0")
     end
   end
 
