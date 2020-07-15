@@ -27,12 +27,12 @@ class HTTP::Client
     raise WebMock::NetConnectNotAllowedError.new(request) unless WebMock.allows_net_connect?
 
     request.headers["User-agent"] ||= "Crystal"
-    request.to_io(socket)
-    socket.flush
+    request.to_io(io)
+    io.flush
 
     result = nil
 
-    HTTP::Client::Response.from_io(socket, request.ignore_body?) do |response|
+    HTTP::Client::Response.from_io(io, request.ignore_body?) do |response|
       result = yield(response)
       close unless response.keep_alive?
       WebMock.callbacks.call(:after_live_request, request, response)

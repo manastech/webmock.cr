@@ -1,7 +1,7 @@
 name: webmock
 version: 0.13.0
 
-crystal: 0.26.0
+crystal: 1.0.0
 
 authors:
   - Ary Borenszweig <aborenszweig@manas.com.ar>
