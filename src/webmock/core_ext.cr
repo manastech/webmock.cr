@@ -4,7 +4,7 @@ class HTTP::Request
   property scheme : String = "http"
 
   def full_uri
-    "#{scheme}://#{host_with_port}#{resource}"
+    "#{scheme}://#{headers["Host"]?}#{resource}"
   end
 end
 
