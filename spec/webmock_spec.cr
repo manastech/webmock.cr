@@ -99,7 +99,7 @@ describe WebMock do
 
       url = "https://www.example.com/test"
       uri = URI.parse(url)
-      request = HTTP::Request.new("POST", uri.full_path)
+      request = HTTP::Request.new("POST", uri.request_target)
       client = HTTP::Client.new(uri)
       response = client.exec(request)
       response.status_code.should eq(200)
