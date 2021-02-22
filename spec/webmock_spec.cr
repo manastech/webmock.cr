@@ -216,6 +216,15 @@ describe WebMock do
     end
   end
 
+  it "uses the most recently called stub of the same url" do
+    WebMock.wrap do
+      WebMock.stub(:get, "www.example.com").to_return(body: "unu")
+      WebMock.stub(:get, "www.example.com").to_return(body: "du")
+
+      HTTP::Client.get("http://www.example.com").body.should eq("du")
+    end
+  end
+
   it "stubs indefinitely" do
     WebMock.wrap do
       WebMock.stub(:get, "www.example.com").to_return(body: "unu")
