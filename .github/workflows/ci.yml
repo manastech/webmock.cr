@@ -1,18 +1,36 @@
 name: Crystal Spec
 
+# Created using https://crystal-lang.github.io/install-crystal/configurator.html
+
 on:
   push:
   pull_request:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+          - os: ubuntu-latest
+            crystal: 0.35.1
+          - os: ubuntu-latest
+            crystal: nightly
+          - os: macos-latest
+          - os: windows-latest
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Download source
         uses: actions/checkout@v2
       - name: Install Crystal
         uses: crystal-lang/install-crystal@v1
+        with:
+          crystal: ${{ matrix.crystal }}
+      - name: Install shards
+        run: shards update --ignore-crystal-version
       - name: Run tests
         run: crystal spec --order=random
-      - name: Build
-        run: shards build
+      - name: Check formatting
+        run: crystal tool format --check
+        if: matrix.crystal == null && matrix.os == 'ubuntu-latest'
