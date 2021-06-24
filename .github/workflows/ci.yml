@@ -14,11 +14,13 @@ jobs:
         include:
           - os: ubuntu-latest
           - os: ubuntu-latest
-            crystal: 0.35.1
+            crystal: 0.36
+          - os: ubuntu-latest
+            crystal: 1.0.0
           - os: ubuntu-latest
             crystal: nightly
           - os: macos-latest
-          - os: windows-latest
+          #- os: windows-latest Not supported
     runs-on: ${{ matrix.os }}
     steps:
       - name: Download source
