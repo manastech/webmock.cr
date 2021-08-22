@@ -35,6 +35,7 @@ class HTTP::Client
     HTTP::Client::Response.from_io(io, request.ignore_body?) do |response|
       result = yield(response)
       WebMock.callbacks.call(:after_live_request, request, response)
+    ensure
       close unless response.keep_alive?
     end
 
