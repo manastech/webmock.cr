@@ -1,5 +1,5 @@
 name: webmock
-version: 0.14.0
+version: 0.14.1
 
 crystal: ">= 0.36.0, < 2.0.0"
 
