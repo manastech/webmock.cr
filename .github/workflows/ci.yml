@@ -19,8 +19,6 @@ jobs:
             crystal: 1.0.0
           - os: ubuntu-latest
             crystal: nightly
-          #- os: macos-latest
-          #- os: windows-latest Not supported
     runs-on: ${{ matrix.os }}
     steps:
       - name: Download source
