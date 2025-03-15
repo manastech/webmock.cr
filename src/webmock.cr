@@ -7,7 +7,7 @@ module WebMock
   @@registry = StubRegistry.new
   @@callbacks = CallbackRegistry.new
 
-  def wrap
+  def wrap(&)
     yield
   ensure
     reset

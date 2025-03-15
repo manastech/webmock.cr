@@ -9,7 +9,7 @@ class WebMock::CallbackRegistry
     @callbacks.clear
   end
 
-  def add
+  def add(&)
     with self yield
     self
   end

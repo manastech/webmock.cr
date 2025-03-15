@@ -1,6 +1,6 @@
 require "./spec_helper"
 
-private def expect_no_match
+private def expect_no_match(&)
   expect_raises WebMock::NetConnectNotAllowedError, /Real HTTP connections are disabled/ do
     yield
   end
