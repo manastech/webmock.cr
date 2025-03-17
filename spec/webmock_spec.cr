@@ -379,9 +379,8 @@ describe WebMock do
         to_return(body: "")
       MSG
       expect_raises WebMock::NetConnectNotAllowedError, error_msg do
-        url = "https://www.example.com/"
-        request = HTTP::Request.new("GET", url)
-        uri = URI.parse(url)
+        uri = URI.parse("https://www.example.com/")
+        request = HTTP::Request.new("GET", uri.path)
         HTTP::Client.new(uri).exec(request)
       end
     end
@@ -398,9 +397,8 @@ describe WebMock do
     MSG
     WebMock.wrap do
       expect_raises WebMock::NetConnectNotAllowedError, error_msg do
-        url = "https://www.example.com/test"
-        request = HTTP::Request.new("GET", url)
-        uri = URI.parse(url)
+        uri = URI.parse("https://www.example.com/test")
+        request = HTTP::Request.new("GET", uri.path)
         HTTP::Client.new(uri).exec(request)
       end
     end
