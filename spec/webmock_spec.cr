@@ -257,7 +257,7 @@ describe WebMock do
     WebMock.wrap do
       WebMock.stub(:post, "http://www.example.com").with(body: "abc", headers: {"Content-Length" => "3"}).to_return(body: "something")
 
-      response = HTTP::Client.post("http://www.example.com", body: "abc")
+      response = HTTP::Client.post("http://www.example.com", body: "abc", headers: HTTP::Headers{"Content-Length" => "3"})
       response.body.should eq("something")
     end
   end
@@ -317,7 +317,7 @@ describe WebMock do
       rescue ex : WebMock::NetConnectNotAllowedError
         ex.message.not_nil!.strip.should eq(
           <<-MSG
-          Real HTTP connections are disabled. Unregistered request: POST http://www.example.com/foo?a=1 with body "Hello!" with headers {"Foo" => "Bar", "Connection" => "close", "Content-Length" => "6", "Host" => "www.example.com"}
+          Real HTTP connections are disabled. Unregistered request: POST http://www.example.com/foo?a=1 with body "Hello!" with headers {"Foo" => "Bar", "Connection" => "close", #{%("Content-Length" => "6", ) if {{ compare_versions(Crystal::VERSION, "1.22.0-dev") < 0}} }"Host" => "www.example.com"}
 
           You can stub this request with the following snippet:
 
@@ -337,7 +337,7 @@ describe WebMock do
       rescue ex : WebMock::NetConnectNotAllowedError
         ex.message.not_nil!.strip.should eq(
           <<-MSG
-          Real HTTP connections are disabled. Unregistered request: POST http://www.example.com/foo?a=1 with headers {"Connection" => "close", "Content-Length" => "0", "Host" => "www.example.com"}
+          Real HTTP connections are disabled. Unregistered request: POST http://www.example.com/foo?a=1 with headers {"Connection" => "close", #{%("Content-Length" => "0", ) if {{ compare_versions(Crystal::VERSION, "1.22.0-dev") < 0}} }"Host" => "www.example.com"}
 
           You can stub this request with the following snippet:
 
